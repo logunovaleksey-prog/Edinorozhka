@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -39,7 +41,7 @@ body{position:fixed;inset:0;width:100%;touch-action:none;overscroll-behavior:non
 .zone{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:14px;pointer-events:auto}
 .zone.l{left:max(18px,calc(env(safe-area-inset-left,0px) + 12px))}
 .zone.r{right:max(18px,calc(env(safe-area-inset-right,0px) + 12px))}
-.cb{--s:80px;flex:none;width:var(--s);height:var(--s);border-radius:50%;border:3px solid rgba(255,255,255,.95);background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+.cb{--s:80px;flex:0 0 auto;box-sizing:border-box;width:var(--s);height:var(--s);min-width:var(--s);max-width:var(--s);min-height:var(--s);max-height:var(--s);aspect-ratio:1/1;overflow:hidden;white-space:nowrap;line-height:1.1;border-radius:50%;border:3px solid rgba(255,255,255,.95);background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
   box-shadow:0 6px 0 rgba(90,63,134,.22),0 10px 24px rgba(60,40,120,.22);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--violetd);touch-action:none;padding:0;cursor:pointer;font:900 12px var(--body)}
 .cb svg{width:calc(var(--s)*.4);height:calc(var(--s)*.4);flex:none}
 .cb.on{transform:translateY(4px) scale(.95);box-shadow:0 2px 0 rgba(90,63,134,.22)}
@@ -480,6 +482,11 @@ function drawSeabed(L,t){const c=ctx,top=470;const g=c.createLinearGradient(0,to
   for(let i=0;i<8;i++){const bx=320+i*310,y=160+((i*83)%220)+Math.sin(t+i)*12,x=bx+Math.sin(t*.6+i)*90,f=Math.cos(t*.6+i)>0?1:-1;tinyFish(c,x,y,['#ffd23f','#ff8fb8','#a585ff','#72dc8f'][i%4],f)}}
 function drawBigBubble(B,t){const r=B.r+Math.sin(t*2)*4;const g=ctx.createRadialGradient(B.x,B.y,r*.3,B.x,B.y,r*1.6);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.6,'rgba(255,255,255,.2)');g.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=g;ctx.fillRect(B.x-r*1.7,B.y-r*1.7,r*3.4,r*3.4);
   drawBubble(ctx,B.x,B.y,r,t,(t*40)%360,false);heart(ctx,B.x,B.y+4,14,'rgba(255,111,174,.7)');for(let i=0;i<5;i++){const a=t+i*TAU/5;star(ctx,B.x+Math.cos(a)*(r+18),B.y+Math.sin(a)*(r+18),5,'#fff7c2',a)}}
+
+/* ---------- auto-update (home-screen app keeps old copy otherwise) ---------- */
+const APP_VER='2026-10-23-3';
+function checkUpdate(){if(!/github\.io$/.test(location.hostname))return;fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/APP_VER='([^']+)'/);if(m&&m[1]!==APP_VER){let k='';try{k=sessionStorage.getItem('upd')||''}catch(_){}if(k!==m[1]){try{sessionStorage.setItem('upd',m[1])}catch(_){}location.replace(location.pathname+'?v='+m[1])}}}).catch(()=>{})}
+checkUpdate();document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});
 
 /* ---------- input ---------- */
 const K={};
